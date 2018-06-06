@@ -4,6 +4,8 @@ import android.arch.persistence.room.Room;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -12,6 +14,7 @@ public class MainActivity extends AppCompatActivity {
 
     EditText name;
     EditText email;
+    Button button;
 
     //Here we are creating a variable of type AppDatabase
     public static AppDatabase appDatabase;
@@ -25,15 +28,28 @@ public class MainActivity extends AppCompatActivity {
 
         name = findViewById(R.id.ed2);
         email = findViewById(R.id.ed3);
+        button = findViewById(R.id.Btn1);
+
 
         String myname = name.getText().toString();
         String myemail = email.getText().toString();
 
 
-          User user = new User();
+          final User user = new User();
 
        user.setName(myname);
        user.setEmail(myemail);
+
+       button.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View view) {
+               AsyncTaskRunner runner = new AsyncTaskRunner();
+
+               runner.execute(user);
+
+
+           }
+       });
 
 
 
@@ -43,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
         //name.setText("");
         //email.setText("");
-        insertUser(user);
+//        insertUser(user);
 
     }
 
@@ -62,6 +78,35 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+    }
+
+
+    private class AsyncTaskRunner extends AsyncTask<User, Void, String> {
+
+        private String resp;
+
+
+
+
+
+
+
+        @Override
+        protected String doInBackground(User... users) {
+
+            User one = users[0];
+
+            appDatabase.daoClass().addUser(one);
+
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String two) {
+            super.onPostExecute(two);
+            Toast.makeText(getApplicationContext(),"Added Successfully",Toast.LENGTH_LONG).show();
+        }
     }
 
 
